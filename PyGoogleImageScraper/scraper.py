@@ -86,3 +86,32 @@ class GoogleImageScrapper:
 
             with open(image_path, 'wb') as handler:
                 handler.write(img_data)
+
+
+def repeat_scraping(search_term, start_increment=0, iterations=5):
+
+    """ Repeat the scraping operation a set number of iterations
+        Each iteration will scrape 100 images.
+        If you have already ran the search operation for this search term
+        you can set the start_icrement to the number already ran."""
+
+    if not os.path.exists("image_data"):
+        os.mkdir("image_data")
+
+    scraper = GoogleImageScrapper(search_term, increment=start_increment)
+
+    for i in range(iterations):
+
+        print("\n==============\n")
+        print(f"\nIncrement: {scraper.increment}")
+        print(f"Images scrapped for category {search_term}: {scraper.number_existing_files}")
+
+        scraper.api_call()
+        scraper.save_images()
+
+        scraper = GoogleImageScrapper(search_term, increment=int(scraper.increment)+1)
+
+
+    print("\n==============\n")
+
+    print(f"Scraping complete. Images Scraped: {scraper.number_existing_files}")
