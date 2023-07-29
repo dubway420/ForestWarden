@@ -2,3 +2,5 @@
 test.py
 keys.py
 image_data
+__pycache__
+*.zip
