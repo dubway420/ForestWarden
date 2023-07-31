@@ -41,16 +41,19 @@ def dataset_generator(dims, *args):
     if type(dims) == int:
 
         dims_verified.append(dims)
-        
+
         # if the first *arg is an integer
         if type(args[0]) == int:
+
+            # set the second dim to this integer
+            dims_verified.append(args[0])
 
             # remove it from the list to check for data
             args = args[1:]
 
-            # set the second dim to this integer
-            dims_verified.append(args[0]) 
-
+        # otherwise, just use the same number again
+        else:
+            dims_verified.append(dims)    
 
     else:
         dims_verified = dims
@@ -58,20 +61,35 @@ def dataset_generator(dims, *args):
     # make sure it is a tuple
     dims_verified = tuple(dims_verified)
 
+
     # If the user has specified a list as a single argument, then assume each item
     # in that list is a path to a folder of images
     if len(args) == 1:
         args = args[0]
 
+
+    # this is for if there is a single folder passed as argument
+    # makes the single str an iterable
+    if type(args) == str:
+        args = [args] 
+    
     # Each arg should be the path to a folder containing images of a single category
     for i, img_folder_path in enumerate(args):
         
-        # This gets the path of all the images in the folder
+        # # This gets the path of all the images in the folder
         img_path_list = list_of_images(img_folder_path) 
 
         for image_path in img_path_list:
-            features.append(convert_image(image_path, dims_verified))
-            labels.append(float(i))
+            
+            try:
+                converted_image = convert_image(image_path, dims_verified)
+                features.append(converted_image)
+                labels.append(float(i))
+
+            except:
+                print(f"Error converting image {image_path}. Ignoring this instance and moving on...")
+
+    return features, labels
     
 
 
