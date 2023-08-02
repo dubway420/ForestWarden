@@ -2,6 +2,8 @@ import os
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.resnet50 import preprocess_input
 import numpy as np
+import os
+from PIL import Image
 
 def list_of_images(directory):
 
@@ -92,6 +94,36 @@ def dataset_generator(dims, *args):
     return features, labels
     
 
+def is_image_file(file_path):
+    try:
+        with Image.open(file_path) as img:
+            img.verify()  # Open and verify that the file is a valid image
+            return True
+    except Exception as e:
+        return False
+
+def clean_folder_of_non_images(folder_path):
+    """
+    Remove files from a folder that are not valid image files.
+
+    Parameters:
+        folder_path (str): The path to the folder containing the files.
+
+    Returns:
+        None
+    """
+    if not os.path.exists(folder_path):
+        raise FileNotFoundError("Folder not found.")
+
+    for file_name in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, file_name)
+
+        if os.path.isfile(file_path) and not is_image_file(file_path):
+            try:
+                os.remove(file_path)
+                print(f"Removed '{file_name}' from '{folder_path}'.")
+            except Exception as e:
+                print(f"Failed to remove '{file_name}': {e}")
 
         
 
